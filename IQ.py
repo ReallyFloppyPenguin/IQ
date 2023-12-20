@@ -28,22 +28,36 @@ from sklearn.model_selection import train_test_split
 # nltk.download("punkt")  # required package for tokenization
 # nltk.download("wordnet")  # word database
 is_using_defined_neuron_formation = False
-is_using_saved_model = True
+is_using_saved_model = False
 audio_mode = False
 is_voice_male = False
-model_destination = "models/model.v1.iq"
-neuron_formation = [500, 500, 1000, 1000, 1000, 10_000, 1000, 1000, 1000, 500, 500]
+model_destination = "models/model.v3.iq"
+neuron_formation = [
+    500,
+    500,
+    1000,
+    1000,
+    1000,
+    10_000,
+    10_000,
+    10_000,
+    1000,
+    1000,
+    1000,
+    500,
+    500,
+]
+tf_verbosity_level = "3"
+dataset_path = "training_data/training_data.v4.iq.json"
+language = "en"
 random_state = 54
 test_size = 0.25
-tf_verbosity_level = "3"
 epochs = 1000
 batch_size = 1
 validation_split = 0.5
 learning_rate = 0.001
 voice_rate = 150
-language = "en"
 understanding_threshold = 0.20
-dataset_path = "training_data/training_data.v2.iq.json"
 loading = halo.Halo("Loading IQ", spinner=spinners.Spinners.dots12.value)
 callbacks = [EarlyStopping(patience=3)]
 
@@ -54,6 +68,7 @@ if audio_mode:
     except:
         print("Sorry, looks like your mic isn't plugged in")
         audio_mode = False
+
 engine = pyttsx3.init()
 voices = engine.getProperty("voices")
 if is_voice_male:
@@ -196,7 +211,7 @@ if not is_using_saved_model:
         epochs=epochs,
         validation_data=(x_test, y_test),
         callbacks=callbacks,
-        verbose=3,
+        verbose=1,
     )
     model.save(model_destination)
     winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
@@ -243,15 +258,14 @@ def Pclass(text, vocab, labels):
     return newList
 
 
-def getRes(firstlist, fJson, message):
+def exec_res(firstlist, fJson, message):
     tag = firstlist[0]
     listOfIntents = fJson["intents"]
     for i in listOfIntents:
         if i["tag"] == tag:
             res = random.choice(i["responses"])
-            res = eval(f"utils.funcs.{res}(message, respond, listen)", globals())
+            exec(f'utils.funcs.{res}("{message}", respond, listen)', globals())
             break
-    return res
 
 
 if audio_mode:
@@ -259,7 +273,6 @@ if audio_mode:
     # r.energy_threshold = 1038
     r.dynamic_energy_threshold = True
     mic = sr.Microphone(device_index=3)
-# ,
 while True:
     if audio_mode:
         try:
@@ -271,7 +284,6 @@ while True:
         human_req = input("<HOOMAN> ")
     intents = Pclass(human_req, newWords, ourClasses)
     if len(intents) == 0:
-        respond("Sorry, i dont know what you mean.")
+        respond("Sorry, i don't know what you mean.")
         continue
-    ourResult = getRes(intents, training_data, human_req)
-    # respond("<IQ> " + ourResult)
+    exec_res(intents, training_data, human_req)

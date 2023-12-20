@@ -40,11 +40,17 @@ def runexe(message, respond, listen):
     respond("Sorry, i don't know what to open")
 
 
-def starttimer(message, respond, listen):
+def starttimer(message: str, respond, listen):
     message = message.lower()
-    keyword = "minutes"
-    before, keyword, after = message.partition(keyword)
-    before = before.strip()
-    t = Timer(int(before), lambda: respond("Your timer is over"))
+    minutes, m_keyword, _ = message.partition("minutes")
+    seconds, s_keyword, _ = message.partition("seconds")
+    minutes = minutes.strip()
+    print(minutes, seconds)
+    respond(f"{minutes} minutes on the timer")
+    if s_keyword:
+        seconds = (int(minutes) * 60) + int(seconds.strip())
+    else:
+        seconds = int(minutes) * 60
+    t = Timer(int(minutes), lambda: respond("Your timer is over"))
     t.start()
 
