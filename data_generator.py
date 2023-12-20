@@ -52,11 +52,11 @@ total_intents = []
 #             patterns.append(a)
 #     total_intents.append({"tag": intent, "patterns": patterns, "responses": responses})
 
-total_intents = json.load(open("training_data/training_data.v2.iq.json"))["intents"]
+total_intents = json.load(open("training_data/training_data.v3.iq.json"))["intents"]
 for i, intent in enumerate(total_intents):
     if intent["tag"] == "starttimer":
         intent_patterns = intent["patterns"]
-        times_to_copy = round((total_lines / len(intent_patterns)) / 2)
+        times_to_copy = round(total_lines / 2)
         print(times_to_copy)
         training_data = []
         for i2 in range(1, times_to_copy):
@@ -89,5 +89,5 @@ if (
     )
     raise UnevenDataErr
 json.dump(
-     {"intents": total_intents}, open("training_data/training_data.v2.iq.json", "w")
+     {"intents": total_intents}, open("training_data/training_data.v3.iq.json", "w")
 )
