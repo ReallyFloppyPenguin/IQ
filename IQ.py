@@ -27,11 +27,12 @@ from sklearn.model_selection import train_test_split
 
 # nltk.download("punkt")  # required package for tokenization
 # nltk.download("wordnet")  # word database
+is_using_defined_neuron_formation = False
 is_using_saved_model = True
 audio_mode = False
 is_voice_male = False
 model_destination = "models/model.v1.iq"
-neuron_formation = []
+neuron_formation = [500, 500, 1000, 1000, 1000, 10_000, 1000, 1000, 1000, 500, 500]
 random_state = 54
 test_size = 0.25
 tf_verbosity_level = "3"
@@ -44,7 +45,6 @@ language = "en"
 understanding_threshold = 0.20
 dataset_path = "training_data/training_data.v2.iq.json"
 loading = halo.Halo("Loading IQ", spinner=spinners.Spinners.dots12.value)
-is_using_defined_neuron_formation = False
 callbacks = [EarlyStopping(patience=3)]
 
 
@@ -84,6 +84,7 @@ def respond(msg):
 
     else:
         print(msg)
+
 
 def listen(mic, recognizer):
     with mic as source:
@@ -144,7 +145,9 @@ trainingData = num.array(
 
 x = num.array(list(trainingData[:, 0]))  # first trainig phase
 y = num.array(list(trainingData[:, 1]))  # second training phase
-x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=random_state, test_size=test_size)
+x_train, x_test, y_train, y_test = train_test_split(
+    x, y, random_state=random_state, test_size=test_size
+)
 iShape = (len(x[0]),)
 oShape = len(y[0])
 
@@ -154,7 +157,7 @@ if not is_using_saved_model:
     # In the case of a simple stack of layers, a Sequential model is appropriate
 
     if not is_using_defined_neuron_formation:
-    # Dense function adds an output layer
+        # Dense function adds an output layer
         model.add(Dense(128, input_shape=iShape, activation="relu"))
         # The activation function in a neural network is in charge of converting the node's summed weighted input into activation of the node or output for the input in question
         model.add(Dropout(0.5))
@@ -177,7 +180,7 @@ if not is_using_saved_model:
         # The activation function in a neural network is in charge of converting the node's summed weighted input into activation of the node or output for the input in question
         model.add(Dropout(0.5))
         for neuron in neuron_formation:
-            model.add(Dense(neuron, activation='relu'))
+            model.add(Dense(neuron, activation="relu"))
         model.add(Dropout(0.3))
         model.add(Dense(oShape, activation="softmax"))
     # below is a callable that returns the value to be used with no arguments
@@ -187,7 +190,14 @@ if not is_using_saved_model:
     # Output the model in summary
     print(model.summary())
     # Whilst training your Nural Network, you have the option of making the output verbose or simple.
-    model.fit(x_train, y_train, epochs=epochs, validation_data=(x_test, y_test), callbacks=callbacks, verbose=3)
+    model.fit(
+        x_train,
+        y_train,
+        epochs=epochs,
+        validation_data=(x_test, y_test),
+        callbacks=callbacks,
+        verbose=3,
+    )
     model.save(model_destination)
     winsound.PlaySound("SystemExclamation", winsound.SND_ALIAS)
 
@@ -239,7 +249,7 @@ def getRes(firstlist, fJson, message):
     for i in listOfIntents:
         if i["tag"] == tag:
             res = random.choice(i["responses"])
-            res = eval(f'utils.funcs.{res}(message, respond, listen)', globals())
+            res = eval(f"utils.funcs.{res}(message, respond, listen)", globals())
             break
     return res
 
