@@ -10,7 +10,6 @@ from nltk.stem import WordNetLemmatizer  # It has the ability to lemmatize.
 import os
 import halo
 import spinners
-import utils.funcs
 import speech_recognition as sr
 import winsound
 import pyttsx3
@@ -28,10 +27,10 @@ from sklearn.model_selection import train_test_split
 # nltk.download("punkt")  # required package for tokenization
 # nltk.download("wordnet")  # word database
 is_using_defined_neuron_formation = False
-is_using_saved_model = False
+is_using_saved_model = True
 audio_mode = False
 is_voice_male = False
-model_destination = "models/model.v3.iq"
+model_destination = "models/model.v4.iq"
 neuron_formation = [
     500,
     500,
@@ -59,13 +58,14 @@ learning_rate = 0.001
 voice_rate = 150
 understanding_threshold = 0.20
 loading = halo.Halo("Loading IQ", spinner=spinners.Spinners.dots12.value)
-callbacks = [EarlyStopping(patience=3)]
+callbacks = [EarlyStopping(patience=5)]
 
 
 if audio_mode:
     try:
         mic = sr.Microphone(device_index=3)
-    except:
+        with mic as source:pass
+    except OSError:
         print("Sorry, looks like your mic isn't plugged in")
         audio_mode = False
 

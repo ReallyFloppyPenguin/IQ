@@ -60,11 +60,11 @@ for i, intent in enumerate(total_intents):
         print(times_to_copy)
         training_data = []
         for i2 in range(1, times_to_copy):
-            training_data.append(f"{i2} mins")
-            training_data.append(f"{i2} secs")
+            training_data.append(f"{i2} mins on the timer")
+            training_data.append(f"{i2} secs on the timer")
         for i2 in range(1, times_to_copy):
-            training_data.append(f"{i2} minutes")
-            training_data.append(f"{i2} seconds")
+            training_data.append(f"{i2} minutes on the timer")
+            training_data.append(f"{i2} seconds on the timer")
         print(training_data, i)
         random.shuffle(training_data)
         total_intents[i]["patterns"] = training_data

@@ -45,12 +45,29 @@ def starttimer(message: str, respond, listen):
     minutes, m_keyword, _ = message.partition("minutes")
     seconds, s_keyword, _ = message.partition("seconds")
     minutes = minutes.strip()
-    print(minutes, seconds)
+    print(minutes, seconds, s_keyword)
+
     respond(f"{minutes} minutes on the timer")
+
+    if not s_keyword:
+        seconds, s_keyword, _ = message.partition("secs")
+        seconds = seconds.strip()
+        print(seconds, "SECS")
+    print(seconds, "SECS")
+    
+
     if s_keyword:
-        seconds = (int(minutes) * 60) + int(seconds.strip())
+        if m_keyword:
+            seconds = (int(minutes) * 60) + int(seconds)
+        else:
+            seconds = int(seconds)
     else:
-        seconds = int(minutes) * 60
-    t = Timer(int(minutes), lambda: respond("Your timer is over"))
+        if m_keyword:
+            seconds = int(minutes) * 60
+        else:
+            respond("WHAT")
+    print(seconds, "SECS")
+    
+    t = Timer(int(seconds), lambda: respond("Your timer is over"))
     t.start()
 
